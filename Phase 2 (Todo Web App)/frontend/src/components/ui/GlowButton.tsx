@@ -37,16 +37,7 @@ const GlowButton = React.forwardRef<HTMLButtonElement, GlowButtonProps>(
       lg: 'px-6 py-3 text-lg',
     };
 
-    const getGlowShadowClass = () => {
-      switch(glowColor) {
-        case 'indigo': return 'hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]'; // indigo-500
-        case 'purple': return 'hover:shadow-[0_0_15px_rgba(139,92,246,0.5)]'; // purple-500
-        case 'blue': return 'hover:shadow-[0_0_15px_rgba(59,130,246,0.5)]'; // blue-500
-        default: return 'hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]'; // indigo-500 as fallback
-      }
-    };
-
-    const glowClasses = `neon-glow-${glowColor} ${getGlowShadowClass()}`;
+    const glowClasses = `neon-glow-${glowColor} hover:shadow-[0_0_15px_theme(colors.${glowColor}.500)]`;
 
     return (
       <motion.button
