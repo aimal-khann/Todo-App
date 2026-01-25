@@ -1,0 +1,152 @@
+openapi: 3.0.0
+info:
+  title: Todo App API
+  description: API for the Todo App backend service
+  version: 1.0.0
+servers:
+  - url: http://todo-backend:8000
+    description: Backend service in Kubernetes cluster
+paths:
+  /api/todos:
+    get:
+      summary: Get all todos
+      description: Retrieve a list of all todo items for the authenticated user
+      responses:
+        '200':
+          description: Successfully retrieved todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+    post:
+      summary: Create a new todo
+      description: Create a new todo item for the authenticated user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTodoRequest'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+  /api/todos/{id}:
+    get:
+      summary: Get a specific todo
+      description: Retrieve a specific todo item by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+    put:
+      summary: Update a todo
+      description: Update an existing todo item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTodoRequest'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+    delete:
+      summary: Delete a todo
+      description: Delete a specific todo item by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '404':
+          description: Todo not found
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, in-progress, completed]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        user_id:
+          type: string
+          format: uuid
+      required:
+        - id
+        - title
+        - status
+        - created_at
+        - updated_at
+        - user_id
+    CreateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, in-progress, completed]
+          default: pending
+      required:
+        - title
+    UpdateTodoRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, in-progress, completed]

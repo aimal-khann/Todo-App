@@ -1,0 +1,75 @@
+# Commands to build Docker images in Minikube context
+
+## Prerequisites
+Make sure Minikube is running:
+```bash
+minikube start --cpus=4 --memory=8192 --disk-size=20g
+```
+
+## Set Docker environment to use Minikube's Docker daemon
+```bash
+eval $(minikube -p minikube docker-env)
+```
+
+## Build Backend Image
+```bash
+cd backend
+docker build -t todo-backend:v1 .
+```
+
+## Build Frontend Image
+```bash
+cd ../frontend
+docker build -t todo-frontend:v1 .
+```
+
+## Verify Images Were Built
+```bash
+docker images | grep todo-
+```
+
+## Alternative: Build Both Images at Once
+```bash
+# From the project root
+eval $(minikube -p minikube docker-env)
+
+# Build backend
+cd backend
+docker build -t todo-backend:v1 .
+cd ..
+
+# Build frontend
+cd frontend
+docker build -t todo-frontend:v1 .
+cd ..
+```
+
+## Test the Images (Optional)
+```bash
+# Test backend
+docker run -p 8000:8000 --rm todo-backend:v1
+
+# Test frontend (in a separate terminal)
+docker run -p 3000:3000 --rm todo-frontend:v1
+```
+
+## Deploy to Minikube with Helm
+```bash
+# Make sure you're in the project root
+cd ..
+
+# Install the Helm chart
+helm install todo-app ./k8s/helm/todo-app --wait
+
+# Check all pods are running
+kubectl get pods
+
+# Get the frontend service URL
+minikube service todo-frontend --url
+```
+
+## Notes
+- The images built in this context are automatically available to the Minikube cluster
+- No need to push to external registry - they're available locally in Minikube
+- Make sure to run `eval $(minikube -p minikube docker-env)` in each new terminal session
+- Use `--wait` flag with helm install to wait for resources to be ready

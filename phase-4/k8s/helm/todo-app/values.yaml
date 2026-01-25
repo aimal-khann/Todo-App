@@ -1,0 +1,67 @@
+# Default values for todo-app
+
+# Frontend configuration
+frontend:
+  replicaCount: 1
+  image:
+    repository: todo-frontend
+    tag: v1
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 3000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    NEXT_PUBLIC_API_URL: "http://todo-backend:8000"
+
+# Backend configuration
+backend:
+  replicaCount: 1
+  image:
+    repository: todo-backend
+    tag: v1
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# PostgreSQL configuration
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "postgres"
+    database: "todo_db"
+  primary:
+    service:
+      ports:
+        postgresql: 5432
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Secrets
+secrets:
+  databaseUrl: "postgresql://postgres:postgres@todo-postgresql:5432/todo_db"
+  secretKey: "your-secret-key-here"
+  openaiApiKey: "your-openai-api-key-here"
+
+# ConfigMaps
+configMaps:
+  environment: "development"
